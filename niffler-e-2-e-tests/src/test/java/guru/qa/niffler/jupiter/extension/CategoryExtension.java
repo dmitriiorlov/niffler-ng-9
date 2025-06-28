@@ -72,8 +72,15 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
         return parameterContext.getParameter().getType().isAssignableFrom(CategoryJson.class);
     }
 
+
     @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return extensionContext.getStore(CategoryExtension.NAMESPACE).get(extensionContext.getUniqueId(), CategoryJson.class);
+    public CategoryJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+      return createdCategory();
+    }
+
+    public static CategoryJson createdCategory() {
+      final ExtensionContext methodContext = context();
+      return methodContext.getStore(NAMESPACE)
+        .get(methodContext.getUniqueId(), CategoryJson.class);
     }
 }

@@ -61,7 +61,7 @@ public class UsersQueueExtension implements
   public void beforeTestExecution(ExtensionContext context) {
     Map<UserType.Type, StaticUser> staticUsers = new HashMap<>();
     Arrays.stream(context.getRequiredTestMethod().getParameters())
-        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
+        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class) && p.getType().isAssignableFrom(StaticUser.class))
         .map(p -> p.getAnnotation(UserType.class))
         .forEach(type -> {
           Optional<StaticUser> user = Optional.empty();
