@@ -28,7 +28,7 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
                             null,
                             UUID.randomUUID().toString(),
                             anno.username(),
-                            anno.archived()
+                            false
                     );
 
                     CategoryJson category = spendApiClient.addCategory(categoryJson);

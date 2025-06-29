@@ -3,7 +3,6 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -33,9 +32,7 @@ public class LoginPage {
     }
 
     public LoginPage checkRegisterForm() {
-        registerForm
-                .should(exist)
-                .should(visible);
+        registerForm.should(visible);
         return this;
     }
 

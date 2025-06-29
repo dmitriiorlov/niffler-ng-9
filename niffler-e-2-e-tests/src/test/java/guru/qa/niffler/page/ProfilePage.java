@@ -17,12 +17,12 @@ public class ProfilePage {
     private final SelenideElement profileHeader = $(By.xpath("//h2[text()='Profile']"));
 
 
-    public ProfilePage profileButtonClick() {
+    public ProfilePage clickProfileButton() {
         profileButton.click();
         return this;
     }
 
-    public ProfilePage profileLinkClick() {
+    public ProfilePage clickProfileLink() {
         profileLink.click();
         return this;
     }

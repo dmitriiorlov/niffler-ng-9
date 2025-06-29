@@ -18,22 +18,21 @@ public class CategoryTest {
     private static final Config CONFIG = Config.getInstance();
     private static final String ADMIN_ACCOUNT = "duck";
     private static final String ADMIN_PWD = "12345";
+    private final ProfilePage profilePage = new ProfilePage();
 
     @Category(
-            username = "duck"
+            username = ADMIN_ACCOUNT
     )
     @Test
-    void activeCategoryShouldBeArchived(CategoryJson json) {
-        String categoryName = json.name();
-        ProfilePage profilePage = new ProfilePage();
-        Selenide.open(CONFIG.frontUrl());
+    void activeCategoryShouldBeArchived(CategoryJson category) {
+        String categoryName = category.name();
         Selenide.open(CONFIG.frontUrl(), LoginPage.class)
                 .fillLoginPage(ADMIN_ACCOUNT, ADMIN_PWD)
                 .submit()
                 .checkThatPageLoaded();
-        profilePage.profileButtonClick()
+        profilePage.clickProfileButton()
                 .checkMenuListIsPresent()
-                .profileLinkClick()
+                .clickProfileLink()
                 .checkProfileHeader()
                 .archiveCategory(categoryName)
                 .showArchivedCategories()
@@ -41,20 +40,20 @@ public class CategoryTest {
     }
 
     @Category(
-            username = "duck",
+            username = ADMIN_ACCOUNT,
             archived = true
     )
     @Test
-    void archivedCategoryShouldBeUnarchived(CategoryJson json) {
-        String categoryName = json.name();
+    void archivedCategoryShouldBeUnarchived(CategoryJson category) {
+        String categoryName = category.name();
         ProfilePage profilePage = new ProfilePage();
         Selenide.open(CONFIG.frontUrl(), LoginPage.class)
                 .fillLoginPage(ADMIN_ACCOUNT, ADMIN_PWD)
                 .submit()
                 .checkThatPageLoaded();
-        profilePage.profileButtonClick()
+        profilePage.clickProfileButton()
                 .checkMenuListIsPresent()
-                .profileLinkClick()
+                .clickProfileLink()
                 .checkProfileHeader()
                 .showArchivedCategories()
                 .unarchiveCategory(categoryName)
