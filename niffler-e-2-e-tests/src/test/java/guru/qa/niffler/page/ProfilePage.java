@@ -11,6 +11,7 @@ public class ProfilePage {
     private final SelenideElement profileButton = $(By.xpath("//*[@aria-label='Menu']"));
     private final SelenideElement menuList = $(By.xpath("//ul[@role='menu']"));
     private final SelenideElement profileLink = $(By.xpath("//a[@href='/profile']"));
+    private final SelenideElement friendsLink = $(By.xpath("//a[@href='/people/friends']"));
     private final SelenideElement showArchiveToggle = $(By.xpath("//span[contains(text(), 'Show archived')]"));
     private final SelenideElement archiveButton = $(By.xpath("//button[text()= 'Archive']"));
     private final SelenideElement unarchiveButton = $(By.xpath("//button[text()= 'Unarchive']"));
@@ -42,6 +43,11 @@ public class ProfilePage {
         XpathUtil.findByXpathTemplate("//*[text()='%s']/../..//button[@aria-label = 'Unarchive category']", category).click();
         unarchiveButton.should(visible).click();
         return this;
+    }
+
+    public FriendsPage clickFriendsLink() {
+        friendsLink.click();
+        return new FriendsPage();
     }
 
     public ProfilePage checkArchiveCategory(String category) {
