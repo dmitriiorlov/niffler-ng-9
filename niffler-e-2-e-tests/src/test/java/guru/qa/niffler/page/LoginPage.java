@@ -1,10 +1,10 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class LoginPage {
     private final SelenideElement usernameInput = $("input[name='username']");
@@ -12,7 +12,7 @@ public class LoginPage {
     private final SelenideElement submitButton = $("button[type='submit']");
     private final SelenideElement registerButton = $("#register-button");
     private final SelenideElement registerForm = $("#register-form");
-    private final SelenideElement badCredentialsMessage =  $(By.xpath("//p[text()='Неверные учетные данные пользователя']"));
+    private final SelenideElement badCredentialsMessage =  $x("//p[text()='Неверные учетные данные пользователя']");
 
 
     public LoginPage fillLoginPage(String username, String password) {

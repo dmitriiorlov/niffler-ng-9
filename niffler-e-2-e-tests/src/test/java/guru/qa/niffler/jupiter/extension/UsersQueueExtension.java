@@ -102,10 +102,10 @@ public class UsersQueueExtension implements
 
   @Override
   public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-      UserType userType = parameterContext.getParameter().getAnnotation(UserType.class);
-      Map<UserType, StaticUser> userMap =
+      UserType.Type userType = parameterContext.getParameter().getAnnotation(UserType.class).value();
+      Map<UserType.Type, StaticUser> userMap =
               extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), Map.class);
-      return userMap != null ? userMap.get(userType.value()) : null;
+      return Optional.ofNullable(userMap.get(userType)).orElseThrow();
   }
 
   private Queue<StaticUser> getUserQueuesByType(UserType.Type userType) {

@@ -12,13 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
 
-@ExtendWith(BrowserExtension.class)
+@ExtendWith({UsersQueueExtension.class, BrowserExtension.class})
 public class FriendsTest {
     private static final Config CFG = Config.getInstance();
     private static final ProfilePage profilePage = new ProfilePage();
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendShouldBePresentInFriendsTable(@UserType(UserType.Type.WITH_FRIEND) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .fillLoginPage(user.username(), user.password())
@@ -30,7 +29,6 @@ public class FriendsTest {
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendsTableShouldBeEmptyForNewUser(@UserType(UserType.Type.EMPTY) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .fillLoginPage(user.username(), user.password())
@@ -42,7 +40,6 @@ public class FriendsTest {
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void incomeInvitationBePresentInFriendsTable(@UserType(UserType.Type.WITH_INCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .fillLoginPage(user.username(), user.password())
@@ -55,7 +52,6 @@ public class FriendsTest {
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void outcomeInvitationBePresentInAllPeopleTable(@UserType(UserType.Type.WITH_OUTCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .fillLoginPage(user.username(), user.password())
