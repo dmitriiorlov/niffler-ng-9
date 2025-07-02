@@ -2,11 +2,11 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.util.XpathUtil;
-import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class RegisterPage {
     private final SelenideElement usernameInput = $("#username");
@@ -14,7 +14,7 @@ public class RegisterPage {
     private final SelenideElement passwordSubmitInput = $("#passwordSubmit");
     private final SelenideElement signUpButton = $("#register-button");
     private final SelenideElement signInButton = $("a.form_sign-in");
-    private final SelenideElement passwordNotEqualSpan = $(By.xpath("//span[text()='Passwords should be equal']"));
+    private final SelenideElement passwordNotEqualSpan = $x("//span[text()='Passwords should be equal']");
 
 
     public RegisterPage setUsername(String username) {

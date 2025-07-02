@@ -2,19 +2,19 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.util.XpathUtil;
-import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class ProfilePage {
-    private final SelenideElement profileButton = $(By.xpath("//*[@aria-label='Menu']"));
-    private final SelenideElement menuList = $(By.xpath("//ul[@role='menu']"));
-    private final SelenideElement profileLink = $(By.xpath("//a[@href='/profile']"));
-    private final SelenideElement showArchiveToggle = $(By.xpath("//span[contains(text(), 'Show archived')]"));
-    private final SelenideElement archiveButton = $(By.xpath("//button[text()= 'Archive']"));
-    private final SelenideElement unarchiveButton = $(By.xpath("//button[text()= 'Unarchive']"));
-    private final SelenideElement profileHeader = $(By.xpath("//h2[text()='Profile']"));
+    private final SelenideElement profileButton = $x("//*[@aria-label='Menu']");
+    private final SelenideElement menuList = $x("//ul[@role='menu']");
+    private final SelenideElement profileLink = $x("//a[@href='/profile']");
+    private final SelenideElement friendsLink = $x("//a[@href='/people/friends']");
+    private final SelenideElement showArchiveToggle = $x("//span[contains(text(), 'Show archived')]");
+    private final SelenideElement archiveButton = $x("//button[text()= 'Archive']");
+    private final SelenideElement unarchiveButton = $x("//button[text()= 'Unarchive']");
+    private final SelenideElement profileHeader = $x("//h2[text()='Profile']");
 
 
     public ProfilePage clickProfileButton() {
@@ -42,6 +42,11 @@ public class ProfilePage {
         XpathUtil.findByXpathTemplate("//*[text()='%s']/../..//button[@aria-label = 'Unarchive category']", category).click();
         unarchiveButton.should(visible).click();
         return this;
+    }
+
+    public FriendsPage clickFriendsLink() {
+        friendsLink.click();
+        return new FriendsPage();
     }
 
     public ProfilePage checkArchiveCategory(String category) {
