@@ -2,7 +2,9 @@ package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.util.RandomDataUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -11,7 +13,9 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
-import java.util.UUID;
+import java.util.Objects;
+
+import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.context;
 
 public class CategoryExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterTestExecutionCallback {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
@@ -21,32 +25,35 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
-                Category.class
+                User.class
         ).ifPresent(
-                anno -> {
-                    CategoryJson categoryJson = new CategoryJson(
-                            null,
-                            UUID.randomUUID().toString(),
-                            anno.username(),
-                            false
-                    );
-
-                    CategoryJson category = spendApiClient.addCategory(categoryJson);
-
-                    if (anno.archived()) {
-                        CategoryJson archivedCategoryJson = new CategoryJson(
-                                category.id(),
-                                category.name(),
-                                category.username(),
-                                true
+                userAnnotation -> {
+                    if (userAnnotation.categories().length > 0) {
+                        Category categoryAnnotation = userAnnotation.categories()[0];
+                        CategoryJson categoryJson = new CategoryJson(
+                                null,
+                                RandomDataUtils.randomCategoryName(),
+                                userAnnotation.username(),
+                                categoryAnnotation.archived()
                         );
-                        category = spendApiClient.updateCategory(archivedCategoryJson);
-                    }
 
-                    context.getStore(NAMESPACE).put(
-                            context.getUniqueId(),
-                            category
-                    );
+                        CategoryJson category = spendApiClient.addCategory(categoryJson);
+
+                        if (categoryAnnotation.archived()) {
+                            CategoryJson archivedCategoryJson = new CategoryJson(
+                                    category.id(),
+                                    category.name(),
+                                    category.username(),
+                                    true
+                            );
+                            category = spendApiClient.updateCategory(archivedCategoryJson);
+                        }
+
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                category
+                        );
+                    }
                 }
         );
     }
@@ -56,7 +63,7 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
         CategoryJson certainTestCategory = context.getStore(NAMESPACE)
                 .get(context.getUniqueId(), CategoryJson.class);
 
-        if (!certainTestCategory.archived()) {
+        if (Objects.nonNull(certainTestCategory) && !certainTestCategory.archived()) {
             spendApiClient.updateCategory(new CategoryJson(
                             certainTestCategory.id(),
                             certainTestCategory.name(),
