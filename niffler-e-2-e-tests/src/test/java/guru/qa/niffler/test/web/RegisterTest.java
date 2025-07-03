@@ -1,4 +1,4 @@
-package guru.qa.niffler.test;
+package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import com.github.javafaker.Faker;
@@ -6,7 +6,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.util.DataUtil;
+import guru.qa.niffler.util.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class RegisterTest {
         String password = FAKER.letterify(PWD_TEMPLATE);
         Selenide.open(CONFIG.frontUrl(), LoginPage.class)
                 .createAccount()
-                .setUsername(DataUtil.generateUniqueName())
+                .setUsername(RandomDataUtils.randomUsername())
                 .setPassword(password)
                 .setPasswordSubmit(password)
                 .submitRegistration()
@@ -52,7 +52,7 @@ public class RegisterTest {
         StringBuilder password = new StringBuilder(FAKER.letterify(PWD_TEMPLATE));
         Selenide.open(CONFIG.frontUrl(), LoginPage.class)
                 .createAccount()
-                .setUsername(DataUtil.generateUniqueName())
+                .setUsername(RandomDataUtils.randomUsername())
                 .setPassword(password.toString())
                 .setPasswordSubmit(password.reverse().toString())
                 .submitRegistration()

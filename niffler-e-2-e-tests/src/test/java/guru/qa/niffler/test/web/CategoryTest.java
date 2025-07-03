@@ -1,7 +1,8 @@
-package guru.qa.niffler.test;
+package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.model.CategoryJson;
@@ -20,8 +21,10 @@ public class CategoryTest {
     private static final String ADMIN_PWD = "12345";
     private final ProfilePage profilePage = new ProfilePage();
 
-    @Category(
-            username = ADMIN_ACCOUNT
+    @User(
+            username = ADMIN_ACCOUNT,
+            categories = @Category(
+            )
     )
     @Test
     void activeCategoryShouldBeArchived(CategoryJson category) {
@@ -39,9 +42,11 @@ public class CategoryTest {
                 .checkArchiveCategory(categoryName);
     }
 
-    @Category(
+    @User(
             username = ADMIN_ACCOUNT,
-            archived = true
+            categories = @Category(
+                    archived = true
+            )
     )
     @Test
     void archivedCategoryShouldBeUnarchived(CategoryJson category) {
