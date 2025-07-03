@@ -61,7 +61,7 @@ public class UsersQueueExtension implements
     public void beforeTestExecution(ExtensionContext context) {
         Map<UserType.Type, StaticUser> staticUsers = new HashMap<>();
         Arrays.stream(context.getRequiredTestMethod().getParameters())
-                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class) && p.getType().isAssignableFrom(StaticUser.class))
+                .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
                 .map(p -> p.getAnnotation(UserType.class))
                 .forEach(type -> {
                     Optional<StaticUser> user = Optional.empty();
@@ -82,7 +82,6 @@ public class UsersQueueExtension implements
         context.getStore(NAMESPACE).put(context.getUniqueId(), staticUsers);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void afterTestExecution(ExtensionContext context) {
         Map<UserType.Type, StaticUser> userMap =
@@ -101,7 +100,6 @@ public class UsersQueueExtension implements
                 && AnnotationSupport.isAnnotated(parameterContext.getParameter(), UserType.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         UserType.Type userType = parameterContext.getParameter().getAnnotation(UserType.class).value();
