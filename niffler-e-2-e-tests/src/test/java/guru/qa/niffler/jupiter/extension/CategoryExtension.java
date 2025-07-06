@@ -34,7 +34,7 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
                                 null,
                                 RandomDataUtils.randomCategoryName(),
                                 userAnnotation.username(),
-                                categoryAnnotation.archived()
+                                false
                         );
 
                         CategoryJson category = spendApiClient.addCategory(categoryJson);
