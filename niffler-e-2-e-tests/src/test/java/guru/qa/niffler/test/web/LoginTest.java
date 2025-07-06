@@ -1,4 +1,4 @@
-package guru.qa.niffler.test;
+package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
@@ -15,8 +15,8 @@ public class LoginTest {
   @Test
   void mainPageShouldBeDisplayedAfterSuccessLogin() {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .fillLoginPage("duck", "12345")
-        .submit()
-        .checkThatPageLoaded();
+            .fillLoginPage("duck", "12345")
+            .submit()
+            .checkThatPageLoaded();
   }
 }
