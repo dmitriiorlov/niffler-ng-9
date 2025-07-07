@@ -1,9 +1,10 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.api.SpendApiClient;
+import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.util.RandomDataUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -19,7 +20,8 @@ import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.conte
 
 public class CategoryExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterTestExecutionCallback {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
-    private final SpendApiClient spendApiClient = new SpendApiClient();
+
+    private final SpendDbClient spendDbClient = new SpendDbClient();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
@@ -30,28 +32,16 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
                 userAnnotation -> {
                     if (userAnnotation.categories().length > 0) {
                         Category categoryAnnotation = userAnnotation.categories()[0];
-                        CategoryJson categoryJson = new CategoryJson(
+                        CategoryEntity ce = spendDbClient.createCategory(new CategoryJson(
                                 null,
                                 RandomDataUtils.randomCategoryName(),
                                 userAnnotation.username(),
-                                false
-                        );
-
-                        CategoryJson category = spendApiClient.addCategory(categoryJson);
-
-                        if (categoryAnnotation.archived()) {
-                            CategoryJson archivedCategoryJson = new CategoryJson(
-                                    category.id(),
-                                    category.name(),
-                                    category.username(),
-                                    true
-                            );
-                            category = spendApiClient.updateCategory(archivedCategoryJson);
-                        }
+                                categoryAnnotation.archived()
+                        ));
 
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
-                                category
+                                CategoryJson.fromEntity(ce)
                         );
                     }
                 }
@@ -64,13 +54,7 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
                 .get(context.getUniqueId(), CategoryJson.class);
 
         if (Objects.nonNull(certainTestCategory) && !certainTestCategory.archived()) {
-            spendApiClient.updateCategory(new CategoryJson(
-                            certainTestCategory.id(),
-                            certainTestCategory.name(),
-                            certainTestCategory.username(),
-                            true
-                    )
-            );
+            spendDbClient.deleteCategory(CategoryEntity.fromJson(certainTestCategory));
         }
     }
 
