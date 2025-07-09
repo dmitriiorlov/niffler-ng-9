@@ -1,10 +1,11 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.api.SpendApiClient;
+import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import java.util.Date;
+import java.util.List;
 
 import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.context;
 
@@ -20,7 +22,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendingExtension.class);
 
-    private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final SpendDbClient spendDbClient = new SpendDbClient();
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
@@ -31,23 +33,36 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                 userAnnotation -> {
                     if (userAnnotation.spendings().length > 0) {
                         Spending spending = userAnnotation.spendings()[0];
-                        SpendJson spendJson = new SpendJson(
+                        CategoryJson category;
+                        List<CategoryEntity> userCategories = spendDbClient.findAllByUserName(userAnnotation.username());
+
+                        if (userCategories.stream()
+                                .map(CategoryEntity::getName)
+                                .toList().contains(spending.category())) {
+                            CategoryEntity ce = userCategories.stream()
+                                    .filter(uc -> uc.getName().equals(spending.category()))
+                                    .findFirst().orElseThrow();
+                            category = CategoryJson.fromEntity(ce);
+                        } else {
+                            category = new CategoryJson(
+                                    null,
+                                    spending.category(),
+                                    userAnnotation.username(),
+                                    false
+                            );
+                        }
+                        SpendJson spend = spendDbClient.createSpend(new SpendJson(
                                 null,
                                 new Date(),
-                                new CategoryJson(
-                                        null,
-                                        spending.category(),
-                                        userAnnotation.username(),
-                                        false
-                                ),
+                                category,
                                 spending.currency(),
                                 spending.amount(),
                                 spending.description(),
                                 userAnnotation.username()
-                        );
+                        ));
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
-                                spendApiClient.addSpend(spendJson)
+                                spend
                         );
                     }
                 }
