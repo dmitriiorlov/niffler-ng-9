@@ -53,7 +53,7 @@ public class CategoryExtension implements ParameterResolver, BeforeTestExecution
         CategoryJson certainTestCategory = context.getStore(NAMESPACE)
                 .get(context.getUniqueId(), CategoryJson.class);
 
-        if (Objects.nonNull(certainTestCategory) && !certainTestCategory.archived()) {
+        if (Objects.nonNull(certainTestCategory)) {
             spendDbClient.deleteCategory(CategoryEntity.fromJson(certainTestCategory));
         }
     }
