@@ -34,7 +34,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                     if (userAnnotation.spendings().length > 0) {
                         Spending spending = userAnnotation.spendings()[0];
                         CategoryJson category;
-                        List<CategoryEntity> userCategories = spendDbClient.findAllByUserName(userAnnotation.username());
+                        List<CategoryEntity> userCategories = spendDbClient.findAllCategoriesByUserName(userAnnotation.username());
 
                         if (userCategories.stream()
                                 .map(CategoryEntity::getName)
