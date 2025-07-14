@@ -21,8 +21,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public List<AuthorityEntity> create(AuthorityEntity... authority) {
-        List<AuthorityEntity> ae = new ArrayList<>();
+    public void create(AuthorityEntity... authority) {
         for (AuthorityEntity authorityEntity : authority) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO authority (user_id, authority) " +
@@ -43,11 +42,30 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                     }
                 }
                 authorityEntity.setId(generatedKey);
-                ae.add(authorityEntity);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-        return ae;
+    }
+
+    @Override
+    public List<AuthorityEntity> findAll() {
+        List<AuthorityEntity> authorityEntities = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM authority")
+        ) {
+            ps.execute();
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    while (rs.next()) {
+                        AuthorityEntity authority = new AuthorityEntity();
+                        authorityEntities.add(authority);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return authorityEntities;
     }
 }

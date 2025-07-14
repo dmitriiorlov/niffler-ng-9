@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.dao.UserdataUserDao;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.dao.UdUserDao;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.Connection;
@@ -9,19 +9,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserdataUserDaoJdbc implements UserdataUserDao {
+public class UdUserDaoJdbc implements UdUserDao {
 
     private final Connection connection;
 
-    public UserdataUserDaoJdbc(Connection connection) {
+    public UdUserDaoJdbc(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public UdUserEntity createUser(UdUserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO user (currency, firstname, full_name, photo, photo_small, surname, username) " +
                         "VALUES (?, ?, ?)",
@@ -53,7 +55,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
-    public Optional<UserEntity> findById(UUID id) {
+    public Optional<UdUserEntity> findById(UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM user WHERE id = ?"
         )) {
@@ -61,7 +63,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 if (rs.next()) {
-                    UserEntity ue = new UserEntity();
+                    UdUserEntity ue = new UdUserEntity();
                     ue.setId(rs.getObject("id", UUID.class));
                     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
@@ -81,7 +83,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
-    public Optional<UserEntity> findByUserName(String username) {
+    public Optional<UdUserEntity> findByUserName(String username) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM user WHERE username = ?"
         )) {
@@ -89,7 +91,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             ps.execute();
             try (ResultSet rs = ps.getResultSet()) {
                 if (rs.next()) {
-                    UserEntity ue = new UserEntity();
+                    UdUserEntity ue = new UdUserEntity();
                     ue.setId(rs.getObject("id", UUID.class));
                     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
@@ -109,7 +111,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public void delete(UdUserEntity user) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM user WHERE id = ?"
         )) {
@@ -118,5 +120,32 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<UdUserEntity> findAll() {
+        List<UdUserEntity> udUserEntities = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM \"user\"")) {
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    while (rs.next()) {
+                        UdUserEntity user = new UdUserEntity();
+                        user.setId(rs.getObject("id", UUID.class));
+                        user.setUsername(rs.getString("username"));
+                        user.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                        user.setFirstname(rs.getString("firstname"));
+                        user.setSurname(rs.getString("surname"));
+                        user.setPhoto(rs.getBytes("photo"));
+                        user.setPhotoSmall(rs.getBytes("photo_small"));
+                        user.setFullname(rs.getString("full_name"));
+                        udUserEntities.add(user);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return udUserEntities;
     }
 }

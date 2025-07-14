@@ -1,9 +1,9 @@
 package guru.qa.niffler.test.web;
 
 import com.github.javafaker.Faker;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserEntity;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
@@ -21,29 +21,29 @@ import java.util.List;
 @Slf4j
 public class JdbcTest {
 
-  @Test
-  void txTest() {
-    SpendDbClient spendDbClient = new SpendDbClient();
+    @Test
+    void txTest() {
+        SpendDbClient spendDbClient = new SpendDbClient();
 
-    SpendJson spend = spendDbClient.createSpend(
-        new SpendJson(
-            null,
-            new Date(),
-            new CategoryJson(
-                null,
-                "cat-name-tx-2",
-                "duck",
-                false
-            ),
-            CurrencyValues.RUB,
-            1000.0,
-            "spend-name-tx",
-            null
-        )
-    );
+        SpendJson spend = spendDbClient.createSpend(
+                new SpendJson(
+                        null,
+                        new Date(),
+                        new CategoryJson(
+                                null,
+                                "cat-name-tx-2",
+                                "duck",
+                                false
+                        ),
+                        CurrencyValues.RUB,
+                        1000.0,
+                        "spend-name-tx",
+                        null
+                )
+        );
 
-    System.out.println(spend);
-  }
+        System.out.println(spend);
+    }
 
     @Test
     void dbTest() {
@@ -57,17 +57,17 @@ public class JdbcTest {
         aeWrite.setAuthority(Authority.WRITE);
         aeWrite.setId(null);
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(null);
-        userEntity.setUsername(RandomDataUtils.randomUsername());
-        userEntity.setPassword(new Faker().letterify("?????"));
-        userEntity.setEnabled(true);
-        userEntity.setAccountNonExpired(true);
-        userEntity.setAccountNonLocked(true);
-        userEntity.setCredentialsNonExpired(true);
-        userEntity.setAuthorities(List.of(aeWrite, aeRead));
+        AuthUserEntity authUserEntity = new AuthUserEntity();
+        authUserEntity.setId(null);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword(new Faker().letterify("?????"));
+        authUserEntity.setEnabled(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAuthorities(List.of(aeWrite, aeRead));
 
-        UserEntity user = authDbClient.createUser(userEntity);
+        AuthUserEntity user = authDbClient.createUser(authUserEntity);
 
         log.info("USER:" + user);
     }
